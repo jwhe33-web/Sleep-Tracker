@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Millie Sleepzzz</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #161b27;
+    --card: #1c2235;
+    --card2: #212840;
+    --accent: #7b9cff;
+    --accent-soft: #3d5299;
+    --accent-glow: rgba(123,156,255,0.15);
+    --moon: #f0c87a;
+    --moon-soft: #7a6030;
+    --sun: #ff9e6d;
+    --sun-soft: #7a4030;
+    --settled: #6fcf97;
+    --text: #e8ecf8;
+    --text-soft: #8892b0;
+    --text-muted: #4a5270;
+    --border: #252d45;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --nap-color: #f0c87a;
+    --night-color: #7b9cff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 50px;
+    background-image:
+      radial-gradient(ellipse at 10% 10%, rgba(123,156,255,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 90% 90%, rgba(240,200,122,0.04) 0%, transparent 60%);
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 8%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 5%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 88% 22%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 45%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 95% 50%, rgba(255,255,255,0.3) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    width: 100%;
+    max-width: 480px;
+    padding: 32px 24px 0;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .moon-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  h1 em { font-style: italic; color: var(--accent); }
+
+  .subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin: 24px 20px 0;
+    width: calc(100% - 40px);
+    max-width: 440px;
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 4px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 9px 8px;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab.active {
+    background: var(--card2);
+    color: var(--accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .panel { display: none; width: calc(100% - 40px); max-width: 440px; position: relative; z-index: 1; }
+  .panel.active { display: block; }
+
+  .track-status {
+    margin-top: 20px;
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .status-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .status-time {
+    font-family: 'Fraunces', serif;
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .status-time.sleeping { color: var(--accent); text-shadow: 0 0 20px rgba(123,156,255,0.4); }
+
+  .status-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; }
+
+  .type-row { display: flex; gap: 8px; margin-top: 16px; }
+
+  .type-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: none;
+    color: var(--text-muted);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .type-btn.selected-nap { border-color: var(--moon); color: var(--moon); background: rgba(240,200,122,0.08); }
+  .type-btn.selected-night { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+
+  .settled-row { display: flex; gap: 6px; margin-top: 10px; }
+
+  .settled-btn {
+    flex: 1;
+    padding: 8px 4px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: none;
+    color: var(--text-muted);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .settled-btn.selected { border-color: var(--settled); color: var(--settled); background: rgba(111,207,151,0.08); }
+
+  .action-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 18px;
+    border-radius: 16px;
+    border: none;
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    font-weight: 300;
+    font-style: italic;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.01em;
+  }
+
+  .action-btn.start {
+    background: linear-gradient(135deg, #2a3560, var(--accent-soft));
+    color: var(--accent);
+    border: 1.5px solid var(--accent-soft);
+    box-shadow: 0 4px 20px rgba(123,156,255,0.2);
+  }
+
+  .action-btn.stop {
+    background: linear-gradient(135deg, #1a2040, #2a3560);
+    color: #ff8080;
+    border: 1.5px solid #4a2525;
+    animation: pulse-stop 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-stop {
+    0%, 100% { box-shadow: 0 4px 20px rgba(255,100,100,0.1); }
+    50% { box-shadow: 0 4px 30px rgba(255,100,100,0.25); }
+  }
+
+  .action-btn:active { transform: scale(0.98); }
+
+  .today-summary { margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+  .summary-card {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 12px 8px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+
+  .summary-val {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .summary-lbl { font-size: 0.65rem; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  .section-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 18px 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .delete-all-btn { font-size: 0.7rem; color: var(--text-muted); background: none; border: none; cursor: pointer; font-family: 'Nunito', sans-serif; padding: 2px 6px; border-radius: 6px; }
+
+  .session-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .session-item {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--border);
+    animation: slide-in 0.3s ease;
+    position: relative;
+  }
+
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .session-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .session-dot.nap { background: var(--moon); box-shadow: 0 0 6px rgba(240,200,122,0.5); }
+  .session-dot.night { background: var(--accent); box-shadow: 0 0 6px rgba(123,156,255,0.5); }
+
+  .session-info { flex: 1; }
+  .session-time { font-family: 'Fraunces', serif; font-size: 0.95rem; color: var(--text); font-weight: 300; }
+  .session-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+  .session-dur { font-family: 'Fraunces', serif; font-size: 1.1rem; color: var(--text-soft); font-weight: 300; }
+
+  .session-delete { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 4px; opacity: 0.5; transition: opacity 0.2s; }
+  .session-delete:hover { opacity: 1; }
+
+  .empty-state { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.85rem; font-style: italic; }
+
+  .chart-section { margin-top: 20px; }
+
+  .chart-card {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+
+  .chart-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 14px; }
+
+  .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 100px; position: relative; }
+
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+
+  .bar-fill {
+    width: 100%;
+    border-radius: 6px 6px 2px 2px;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent-soft) 100%);
+    transition: height 0.5s ease;
+    min-height: 2px;
+    position: relative;
+  }
+
+  .bar-fill:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card2);
+    color: var(--text);
+    font-size: 0.65rem;
+    padding: 3px 6px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .bar-label { font-size: 0.6rem; color: var(--text-muted); text-align: center; }
+
+  .bar-target {
+    position: absolute;
+    left: 0; right: 0;
+    border-top: 1.5px dashed rgba(123,156,255,0.3);
+    pointer-events: none;
+  }
+
+  .timeline-chart { position: relative; }
+
+  .timeline-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+
+  .timeline-label { font-size: 0.65rem; color: var(--text-muted); width: 28px; flex-shrink: 0; text-align: right; }
+
+  .timeline-track { flex: 1; height: 20px; background: var(--card); border-radius: 6px; position: relative; overflow: hidden; }
+
+  .timeline-block { position: absolute; height: 100%; border-radius: 4px; opacity: 0.85; }
+  .timeline-block.nap { background: var(--moon); }
+  .timeline-block.night { background: var(--accent); }
+
+  .timeline-hours { display: flex; margin-left: 36px; margin-top: 4px; position: relative; }
+
+  .timeline-hour-mark { flex: 1; font-size: 0.55rem; color: var(--text-muted); text-align: center; }
+
+  .legend { display: flex; gap: 14px; margin-top: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.7rem; color: var(--text-muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .legend-dot.nap { background: var(--moon); }
+  .legend-dot.night { background: var(--accent); }
+
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+
+  .stat-tile { background: var(--surface); border-radius: 14px; padding: 14px; border: 1px solid var(--border); }
+  .stat-tile-val { font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: 300; color: var(--text); line-height: 1; }
+  .stat-tile-lbl { font-size: 0.68rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  .no-data { text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.82rem; font-style: italic; }
+
+  .chart-subtitle { font-size: 0.68rem; color: var(--text-muted); margin-bottom: 12px; font-style: italic; }
+
+  .week-selector { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+
+  .week-btn {
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text-muted);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.68rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .week-btn.active { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
+
+  .weekly-avg-block { position: absolute; height: 100%; border-radius: 4px; opacity: 0.65; }
+  .weekly-avg-block.nap { background: var(--moon); }
+  .weekly-avg-block.night { background: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="moon-icon">🌙</span>
+  <h1>Millie <em>Sleepzzz</em></h1>
+  <p class="subtitle">Track every rest · See the patterns</p>
+</header>
+
+<div class="tabs" style="margin-top:20px;">
+  <button class="tab active" onclick="switchTab('track')">Track</button>
+  <button class="tab" onclick="switchTab('charts')">Charts</button>
+</div>
+
+<!-- TRACK PANEL -->
+<div class="panel active" id="panel-track">
+  <div class="track-status">
+    <div class="status-label" id="statusLabel">Baby is awake</div>
+    <div class="status-time" id="statusTime">——</div>
+    <div class="status-sub" id="statusSub">tap below to log a sleep session</div>
+  </div>
+
+  <div class="type-row">
+    <button class="type-btn selected-nap" id="typeNap" onclick="selectType('nap')">☀️ Nap</button>
+    <button class="type-btn" id="typeNight" onclick="selectType('night')">🌙 Night Sleep</button>
+  </div>
+
+  <div class="settled-row">
+    <button class="settled-btn selected" id="settledFeeding" onclick="selectSettled('feeding')">🤱 Feeding</button>
+    <button class="settled-btn" id="settledRocking" onclick="selectSettled('rocking')">🫶 Rocking</button>
+    <button class="settled-btn" id="settledSelf" onclick="selectSettled('self')">✨ Self</button>
+  </div>
+
+  <button class="action-btn start" id="actionBtn" onclick="toggleSleep()">
+    <span id="actionLabel">Begin Sleep Session</span>
+  </button>
+
+  <div class="today-summary">
+    <div class="summary-card">
+      <div class="summary-val" id="todayTotal">0h</div>
+      <div class="summary-lbl">Today's Sleep</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-val" id="todaySessions">0</div>
+      <div class="summary-lbl">Sessions</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-val" id="todayLongest">—</div>
+      <div class="summary-lbl">Longest</div>
+    </div>
+  </div>
+
+  <div class="section-title">
+    Recent Sessions
+    <button class="delete-all-btn" onclick="clearAll()">Clear all</button>
+  </div>
+  <div class="session-list" id="sessionList">
+    <div class="empty-state">No sessions logged yet.</div>
+  </div>
+</div>
+
+<!-- CHARTS PANEL -->
+<div class="panel" id="panel-charts">
+  <div class="chart-section">
+
+    <div class="stats-grid">
+      <div class="stat-tile">
+        <div class="stat-tile-val" id="avgDaily">—</div>
+        <div class="stat-tile-lbl">Avg Daily Sleep</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-tile-val" id="avgNaps">—</div>
+        <div class="stat-tile-lbl">Avg Naps / Day</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Hours slept per day (last 7 days)</div>
+      <div class="bar-chart" id="barChart">
+        <div class="no-data">No data yet</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Avg hours slept per day · by week</div>
+      <div class="bar-chart" id="weeklyBarChart">
+        <div class="no-data">No data yet</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Sleep timeline (last 7 days)</div>
+      <div class="timeline-chart" id="timelineChart">
+        <div class="no-data">No data yet</div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot nap"></div> Nap</div>
+        <div class="legend-item"><div class="legend-dot night"></div> Night</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Average sleep timeline by week</div>
+      <div class="chart-subtitle" id="weeklySubtitle"></div>
+      <div class="timeline-chart" id="weeklyTimelineChart">
+        <div class="no-data">No data yet — need at least a few days</div>
+      </div>
+      <div class="legend" style="margin-top:10px;">
+        <div class="legend-item"><div class="legend-dot nap"></div> Avg nap window</div>
+        <div class="legend-item"><div class="legend-dot night"></div> Avg night window</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let sessions = JSON.parse(localStorage.getItem('millie-sleep-sessions') || '[]');
+  let sleeping = false;
+  let sleepStart = null;
+  let sleepType = 'nap';
+  let sleepSettled = 'feeding';
+  let liveInterval = null;
+
+  function save() { localStorage.setItem('millie-sleep-sessions', JSON.stringify(sessions)); }
+
+  function fmtDur(ms) {
+    const totalMin = Math.round(ms / 60000);
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    return h > 0 ? `${h}h ${m}m` : `${m}m`;
+  }
+
+  function fmtDurShort(ms) {
+    const totalMin = Math.round(ms / 60000);
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    return h > 0 ? `${h}h${m > 0 ? m+'m' : ''}` : `${m}m`;
+  }
+
+  function fmtTime(ts) { return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+  function fmtDate(ts) { return new Date(ts).toLocaleDateString([], { weekday: 'short', day: 'numeric' }); }
+
+  function dayKey(ts) {
+    const d = new Date(ts);
+    return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  }
+
+  function getWeekKey(ts) {
+    const d = new Date(ts);
+    const jan1 = new Date(d.getFullYear(), 0, 1);
+    const week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+    return `${d.getFullYear()}-W${week.toString().padStart(2,'0')}`;
+  }
+
+  function elapsed(start) {
+    const ms = Date.now() - start;
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    const s = Math.floor((ms % 60000) / 1000);
+    return h > 0
+      ? `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`
+      : `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach((t,i) => {
+      t.classList.toggle('active', ['track','charts'][i] === tab);
+    });
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    if (tab === 'charts') renderCharts();
+  }
+
+  function selectType(type) {
+    sleepType = type;
+    document.getElementById('typeNap').className = 'type-btn' + (type === 'nap' ? ' selected-nap' : '');
+    document.getElementById('typeNight').className = 'type-btn' + (type === 'night' ? ' selected-night' : '');
+  }
+
+  function selectSettled(s) {
+    sleepSettled = s;
+    ['feeding','rocking','self'].forEach(x => {
+      document.getElementById('settled' + x.charAt(0).toUpperCase() + x.slice(1)).className =
+        'settled-btn' + (s === x ? ' selected' : '');
+    });
+  }
+
+  function toggleSleep() {
+    if (!sleeping) {
+      sleeping = true;
+      sleepStart = Date.now();
+      document.getElementById('actionBtn').className = 'action-btn stop';
+      document.getElementById('actionLabel').textContent = 'End Sleep Session';
+      document.getElementById('statusLabel').textContent = sleepType === 'nap' ? '☀️ Napping' : '🌙 Night sleep';
+      document.getElementById('statusTime').className = 'status-time sleeping';
+      document.getElementById('statusSub').textContent = 'tap to end';
+      liveInterval = setInterval(() => {
+        document.getElementById('statusTime').textContent = elapsed(sleepStart);
+      }, 1000);
+    } else {
+      const duration = Date.now() - sleepStart;
+      sessions.unshift({ id: Date.now(), start: sleepStart, end: Date.now(), duration, type: sleepType, settled: sleepSettled });
+      save();
+      clearInterval(liveInterval);
+      sleeping = false;
+      document.getElementById('actionBtn').className = 'action-btn start';
+      document.getElementById('actionLabel').textContent = 'Begin Sleep Session';
+      document.getElementById('statusLabel').textContent = 'Baby is awake';
+      document.getElementById('statusTime').className = 'status-time';
+      document.getElementById('statusTime').textContent = '——';
+      document.getElementById('statusSub').textContent = 'last session: ' + fmtDur(duration);
+      renderList();
+      renderTodaySummary();
+    }
+  }
+
+  function renderList() {
+    const list = document.getElementById('sessionList');
+    const recent = sessions.slice(0, 12);
+    if (recent.length === 0) { list.innerHTML = '<div class="empty-state">No sessions logged yet.</div>'; return; }
+    list.innerHTML = recent.map(s => `
+      <div class="session-item">
+        <div class="session-dot ${s.type}"></div>
+        <div class="session-info">
+          <div class="session-time">${fmtTime(s.start)} → ${fmtTime(s.end)}</div>
+          <div class="session-meta">${s.type === 'nap' ? 'Nap' : 'Night'} · ${settledLabel(s.settled)} · ${fmtDate(s.start)}</div>
+        </div>
+        <div class="session-dur">${fmtDur(s.duration)}</div>
+        <button class="session-delete" onclick="deleteSession(${s.id})">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function settledLabel(s) {
+    return s === 'feeding' ? '🤱 Feeding' : s === 'rocking' ? '🫶 Rocking' : '✨ Self-settled';
+  }
+
+  function deleteSession(id) {
+    sessions = sessions.filter(s => s.id !== id);
+    save(); renderList(); renderTodaySummary();
+  }
+
+  function clearAll() {
+    if (sessions.length === 0) return;
+    if (!confirm('Clear all sleep sessions?')) return;
+    sessions = []; save(); renderList(); renderTodaySummary();
+  }
+
+  function renderTodaySummary() {
+    const today = dayKey(Date.now());
+    const todaySessions = sessions.filter(s => dayKey(s.start) === today);
+    const totalMs = todaySessions.reduce((a, s) => a + s.duration, 0);
+    const longest = todaySessions.length > 0 ? Math.max(...todaySessions.map(s => s.duration)) : 0;
+    const h = Math.floor(totalMs / 3600000);
+    const m = Math.floor((totalMs % 3600000) / 60000);
+    document.getElementById('todayTotal').textContent = totalMs > 0 ? `${h}h${m > 0 ? m+'m' : ''}` : '0h';
+    document.getElementById('todaySessions').textContent = todaySessions.length;
+    document.getElementById('todayLongest').textContent = longest > 0 ? fmtDurShort(longest) : '—';
+  }
+
+  function renderCharts() {
+    if (sessions.length === 0) return;
+    const byDay = {};
+    sessions.forEach(s => {
+      const k = dayKey(s.start);
+      if (!byDay[k]) byDay[k] = { sessions: [], ts: s.start };
+      byDay[k].sessions.push(s);
+    });
+    const days = Object.keys(byDay).sort().slice(-7);
+    const totalsByDay = days.map(k => byDay[k].sessions.reduce((a,s) => a + s.duration, 0));
+    const avgMs = totalsByDay.reduce((a,b) => a+b, 0) / totalsByDay.length;
+    const avgNaps = days.map(k => byDay[k].sessions.filter(s => s.type === 'nap').length)
+                        .reduce((a,b) => a+b, 0) / days.length;
+    document.getElementById('avgDaily').textContent = fmtDurShort(avgMs);
+    document.getElementById('avgNaps').textContent = avgNaps.toFixed(1);
+    renderBarChart(days, byDay, totalsByDay);
+    renderWeeklyBarChart();
+    renderTimeline(days, byDay);
+    renderWeeklyTimeline();
+  }
+
+  function renderBarChart(days, byDay, totalsByDay) {
+    const maxMs = Math.max(...totalsByDay, 6 * 3600000);
+    const targetMs = 16 * 3600000;
+    const targetPct = Math.min((targetMs / maxMs) * 100, 100);
+    const chart = document.getElementById('barChart');
+    chart.innerHTML = `<div class="bar-target" style="bottom:${targetPct}%;" title="Target ~16h"></div>`;
+    days.forEach((k, i) => {
+      const ms = totalsByDay[i];
+      const pct = (ms / maxMs) * 100;
+      const label = new Date(byDay[k].ts).toLocaleDateString([], { weekday: 'short' });
+      const col = document.createElement('div');
+      col.className = 'bar-col';
+      col.innerHTML = `<div class="bar-fill" style="height:${Math.max(pct,2)}%" data-tip="${fmtDur(ms)}"></div><div class="bar-label">${label}</div>`;
+      chart.appendChild(col);
+    });
+  }
+
+  function renderWeeklyBarChart() {
+    const chart = document.getElementById('weeklyBarChart');
+    const byWeekDay = {};
+    sessions.forEach(s => {
+      const wk = getWeekKey(s.start);
+      const dk = dayKey(s.start);
+      if (!byWeekDay[wk]) byWeekDay[wk] = {};
+      if (!byWeekDay[wk][dk]) byWeekDay[wk][dk] = 0;
+      byWeekDay[wk][dk] += s.duration;
+    });
+    const weeks = Object.keys(byWeekDay).sort();
+    if (weeks.length === 0) { chart.innerHTML = '<div class="no-data">No data yet</div>'; return; }
+    const weekAvgs = weeks.map(wk => {
+      const dayTotals = Object.values(byWeekDay[wk]);
+      return dayTotals.reduce((a,b) => a+b, 0) / dayTotals.length;
+    });
+    const maxMs = Math.max(...weekAvgs, 6 * 3600000);
+    const targetPct = Math.min((16 * 3600000 / maxMs) * 100, 100);
+    chart.innerHTML = `<div class="bar-target" style="bottom:${targetPct}%;" title="Target ~16h/day"></div>`;
+    weeks.forEach((wk, i) => {
+      const ms = weekAvgs[i];
+      const pct = (ms / maxMs) * 100;
+      const label = wk.replace(/\d{4}-/, '');
+      const col = document.createElement('div');
+      col.className = 'bar-col';
+      col.innerHTML = `<div class="bar-fill" style="height:${Math.max(pct,2)}%;background:linear-gradient(180deg,var(--moon) 0%,var(--moon-soft) 100%);" data-tip="${fmtDur(ms)}/day"></div><div class="bar-label">${label}</div>`;
+      chart.appendChild(col);
+    });
+  }
+
+  function renderTimeline(days, byDay) {
+    const chart = document.getElementById('timelineChart');
+    chart.innerHTML = '';
+    days.forEach(k => {
+      const d = new Date(byDay[k].ts);
+      const row = document.createElement('div');
+      row.className = 'timeline-row';
+      const lbl = document.createElement('div');
+      lbl.className = 'timeline-label';
+      lbl.textContent = d.toLocaleDateString([], { weekday: 'short' });
+      const track = document.createElement('div');
+      track.className = 'timeline-track';
+      byDay[k].sessions.forEach(s => {
+        const startOfDay = new Date(s.start); startOfDay.setHours(0,0,0,0);
+        const startPct = ((s.start - startOfDay.getTime()) / 86400000) * 100;
+        const durPct = (s.duration / 86400000) * 100;
+        const block = document.createElement('div');
+        block.className = `timeline-block ${s.type}`;
+        block.style.left = startPct + '%';
+        block.style.width = Math.max(durPct, 0.5) + '%';
+        block.title = `${fmtTime(s.start)} – ${fmtTime(s.end)} (${fmtDur(s.duration)})`;
+        track.appendChild(block);
+      });
+      row.appendChild(lbl); row.appendChild(track);
+      chart.appendChild(row);
+    });
+    const hoursRow = document.createElement('div');
+    hoursRow.className = 'timeline-hours';
+    [0,3,6,9,12,15,18,21,24].forEach(h => {
+      const mark = document.createElement('div');
+      mark.className = 'timeline-hour-mark';
+      mark.textContent = h === 0 || h === 24 ? '' : h + 'h';
+      hoursRow.appendChild(mark);
+    });
+    chart.appendChild(hoursRow);
+  }
+
+  function renderWeeklyTimeline(selectedWeek) {
+    const chart = document.getElementById('weeklyTimelineChart');
+    const subtitle = document.getElementById('weeklySubtitle');
+    if (sessions.length < 2) { chart.innerHTML = '<div class="no-data">No data yet — need at least a few days</div>'; subtitle.textContent = ''; return; }
+    const byWeek = {};
+    sessions.forEach(s => {
+      const wk = getWeekKey(s.start);
+      if (!byWeek[wk]) byWeek[wk] = [];
+      byWeek[wk].push(s);
+    });
+    const weeks = Object.keys(byWeek).sort();
+    if (!selectedWeek || !byWeek[selectedWeek]) selectedWeek = weeks[weeks.length - 1];
+    const weekSelectorHtml = `<div class="week-selector">${weeks.map(w => `<button class="week-btn ${w === selectedWeek ? 'active' : ''}" onclick="renderWeeklyTimeline('${w}')">${w}</button>`).join('')}</div>`;
+    const weekSessions = byWeek[selectedWeek];
+    const napSessions = weekSessions.filter(s => s.type === 'nap');
+    const nightSessions = weekSessions.filter(s => s.type === 'night');
+    function toFrac(ts) { const d = new Date(ts); return (d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds()) / 86400; }
+    function clusterByTime(arr) {
+      if (arr.length === 0) return [];
+      const sorted = [...arr].sort((a,b) => toFrac(a.start) - toFrac(b.start));
+      const clusters = []; let current = [sorted[0]];
+      for (let i = 1; i < sorted.length; i++) {
+        if (toFrac(sorted[i].start) - toFrac(sorted[i-1].start) < 3/24) current.push(sorted[i]);
+        else { clusters.push(current); current = [sorted[i]]; }
+      }
+      clusters.push(current); return clusters;
+    }
+    function avgBlock(cluster) {
+      const avgStart = cluster.reduce((a,s) => a + toFrac(s.start), 0) / cluster.length;
+      const avgEnd = cluster.reduce((a,s) => a + toFrac(s.end), 0) / cluster.length;
+      return { start: avgStart, end: Math.max(avgEnd, avgStart + 0.005) };
+    }
+    const napClusters = clusterByTime(napSessions).map(avgBlock);
+    const nightClusters = clusterByTime(nightSessions).map(avgBlock);
+    const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    chart.innerHTML = weekSelectorHtml;
+    subtitle.textContent = `${selectedWeek} · ${weekSessions.length} sessions across ${new Set(weekSessions.map(s => dayKey(s.start))).size} days`;
+    const avgRow = document.createElement('div'); avgRow.className = 'timeline-row';
+    const avgLbl = document.createElement('div'); avgLbl.className = 'timeline-label'; avgLbl.textContent = 'Avg';
+    const avgTrack = document.createElement('div'); avgTrack.className = 'timeline-track';
+    napClusters.forEach(b => { const bl = document.createElement('div'); bl.className = 'weekly-avg-block nap'; bl.style.left = (b.start*100)+'%'; bl.style.width = Math.max((b.end-b.start)*100,0.5)+'%'; bl.title = `Avg nap: ${fracToTime(b.start)} – ${fracToTime(b.end)}`; avgTrack.appendChild(bl); });
+    nightClusters.forEach(b => { const bl = document.createElement('div'); bl.className = 'weekly-avg-block night'; bl.style.left = (b.start*100)+'%'; bl.style.width = Math.max((b.end-b.start)*100,0.5)+'%'; bl.title = `Avg night: ${fracToTime(b.start)} – ${fracToTime(b.end)}`; avgTrack.appendChild(bl); });
+    avgRow.appendChild(avgLbl); avgRow.appendChild(avgTrack); chart.appendChild(avgRow);
+    const daysByDow = {};
+    weekSessions.forEach(s => { const dow = new Date(s.start).getDay(); if (!daysByDow[dow]) daysByDow[dow] = []; daysByDow[dow].push(s); });
+    [1,2,3,4,5,6,0].forEach((dow, i) => {
+      if (!daysByDow[dow]) return;
+      const dr = document.createElement('div'); dr.className = 'timeline-row';
+      const dl = document.createElement('div'); dl.className = 'timeline-label'; dl.textContent = dayNames[i];
+      const dt = document.createElement('div'); dt.className = 'timeline-track'; dt.style.opacity = '0.6';
+      daysByDow[dow].forEach(s => {
+        const sf = toFrac(s.start); const ef = toFrac(s.end);
+        const bl = document.createElement('div'); bl.className = `timeline-block ${s.type}`;
+        bl.style.left = (sf*100)+'%'; bl.style.width = Math.max((ef-sf)*100,0.5)+'%'; bl.style.opacity='0.7';
+        bl.title = `${fmtTime(s.start)} – ${fmtTime(s.end)} (${fmtDur(s.duration)})`; dt.appendChild(bl);
+      });
+      dr.appendChild(dl); dr.appendChild(dt); chart.appendChild(dr);
+    });
+    const hr = document.createElement('div'); hr.className = 'timeline-hours';
+    [0,3,6,9,12,15,18,21,24].forEach(h => { const m = document.createElement('div'); m.className = 'timeline-hour-mark'; m.textContent = h===0||h===24?'':h+'h'; hr.appendChild(m); });
+    chart.appendChild(hr);
+  }
+
+  function fracToTime(frac) {
+    const totalMin = Math.round(frac * 24 * 60);
+    const h = Math.floor(totalMin / 60) % 24;
+    const m = totalMin % 60;
+    return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+  }
+
+  renderList();
+  renderTodaySummary();
+  if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(() => {});
+</script>
+</body>
+</html>
